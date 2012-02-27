@@ -76,6 +76,3 @@ def scrape_episode(html):
     return (info, utterances)
 
 
-if __name__ == '__main__':
-    #scrape_episode("http://www.seinology.com/scripts/script-16.shtml")
-    pass
