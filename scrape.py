@@ -20,6 +20,11 @@ def unescape(s):
     s = s.replace("&#148;", "'")
     s = s.replace("&#149;", "'")
     s = s.replace("&#150;", "'")
+
+    s = s.replace("&quot;", "'")
+    s = s.replace("&#133;", "...")
+
+
     # this has to be last:
     s = s.replace("&amp;", "&")
     return s
