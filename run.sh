@@ -1,7 +1,7 @@
 #!/bin/bash
 
 rm seinfeld.db
-sqlite3 seinfeld.db < make.sql
+sqlite3 seinfeld.db < maketables.sql
 
 for file in `ls scripts`
 do
@@ -9,3 +9,5 @@ do
   python populatedb.py scripts/$file
 done
 
+echo Inserting words
+python populatewords.py
