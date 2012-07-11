@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 
+from operator import itemgetter
 import re
 import sqlite3
 
 con = sqlite3.connect('seinfeld.db')
 cur = con.cursor()
-sql = """
-      SELECT u.speaker, s.text, s.id
-      FROM sentence s JOIN utterance u ON u.id == s.utterance_id
-      """
-res = cur.execute(sql).fetchall()
-res.sort(key=lambda item: item[2])
+
+query = """
+        SELECT u.speaker, s.text, s.id
+        FROM sentence s JOIN utterance u ON u.id == s.utterance_id
+        """
+res = sorted(cur.execute(query).fetchall(), key=itemgetter(2))
+
 for speaker, sentence, sent_id in res:
+    #TODO: use nltk sentence splitter and tokenizer
     pat = re.compile(r"[A-Za-z']+|\.{3}|[!?.]")
     words = pat.findall(sentence.lower())
     for i, word in enumerate(words):

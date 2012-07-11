@@ -52,6 +52,9 @@ class DatabasePopulator(object):
             VALUES(?, ?, ?)
             """, (utterance_id, sentence_number, text))
 
+    #TODO: add words table and store text there, not in sentence.
+
+
     def add_episode(self, html):
         data = scrape_episode(html)
         info, utterances = data
@@ -63,7 +66,6 @@ class DatabasePopulator(object):
         writer = ', '.join(info['writers'])
         director = info['director']
 
-        # ADD an Episode
         episode_id = self._add_episode(season_num, episode_num, title, date, 
                                        writer, director)
 
@@ -71,7 +73,6 @@ class DatabasePopulator(object):
             utterance_id = self._add_utterance(episode_id, utt_num + 1, speaker)
 
             for sent_num, sentence in enumerate(sentences):
-                # Add a Sentence
                 self._add_sentence(utterance_id, sent_num + 1, sentence)
 
 
