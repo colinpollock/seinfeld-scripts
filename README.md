@@ -101,6 +101,7 @@ CHANGES MADE TO DATA
 Stats
 =====
 ####Characters with the most lines
+```sql
 SELECT speaker, count(*) count
 FROM utterance
 GROUP BY speaker
@@ -128,6 +129,7 @@ STEINBRENNER	122
 MICKEY	118
 BANIA	102
 ROSS	102
+```
 
 
 Projects
