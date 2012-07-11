@@ -1,39 +1,137 @@
+Seinfeld Scripts
+================
 
-AUTHOR IDENTIFICATION
-=====================
-* Partition the data set and then use cross validation.
-* What words does each character use that others don't use as much?
+I downloaded all of the Seinfeld scripts from 
+[seinology.com](http://www.seinology.com/) and wrote scripts to extract the
+scripts and put them into a SQLite database.
 
-FEATURES
+I am planning on eventually using this data in a few projects described below.
+
+How to get the Data
+===================
+The compressed SQLite database file is 12MB so I'm not putting it in this repo (
+email me if you want it). You can also follow these steps:
+1) mkdir scripts  
+2) ./download.sh scripts
+3) ./run.sh
+
+
+Database Schema
+===============
+
+Episode
+-------
+sqlite> .schema episode
+CREATE TABLE episode(
+    id INTEGER PRIMARY KEY,
+    season_number INTEGER NOT NULL,
+    episode_number INTEGER NOT NULL,
+    title TEXT,
+    the_date TEXT,
+    writer TEXT,
+    director TEXT,
+    UNIQUE(season_number, episode_number)
+);
+
+sqlite> select * from episode limit 3;
+id	season_number	episode_number	title	the_date	writer	director
+1	1	0	Good News, Bad News	July 5, 1989	Larry David, Jerry Seinfeld	Art Wolff
+2	2	5	The Apartment	April 4, 1991	Peter Mehlman	Tom Cherones
+3	6	16	The Beard	February 9, 1995	Carol Leifer	Andy Ackerman
+
+
+Utterance
+---------
+CREATE TABLE utterance(
+    id INTEGER PRIMARY KEY,
+    episode_id INTEGER NOT NULL,
+    utterance_number INTEGER NOT NULL,
+
+    speaker TEXT NOT NULL,
+    UNIQUE(episode_id, utterance_number),
+    FOREIGN KEY(episode_id) REFERENCES episode(id)
+);
+
+sqlite> select * from utterance limit 3;
+id	episode_id	utterance_number	speaker
+1	1	1	JERRY
+2	1	2	GEORGE
+3	1	3	JERRY
+
+
+Sentence
 --------
-* Average number of sentences per utterance.
-* Average number of words per sentence.
-* Proportion of word tokens to types.
-* Function ords
-  * Frequency, position, and "immediate context".
-* Richness or vocabulary of each speaker.
-* POS
+sqlite> .schema sentence
+CREATE TABLE sentence(
+    id INTEGER PRIMARY KEY,
+    utterance_id INTEGER NOT NULL,
+    sentence_number INTEGER NOT NULL,
+    text TEXT NOT NULL,
+    UNIQUE(utterance_id, sentence_number),
+    FOREIGN KEY(utterance_id) REFERENCES utterance(id)
+);
+
+sqlite> select * from sentence limit 3;
+id	utterance_id	sentence_number	text
+1	1	1	(pointing at George's shirt) See, to me, that button is in the worst possible spot.
+2	1	2	The second button literally makes or breaks the shirt, look at it.
+3	1	3	It's too high!
 
 
-
-
-QUERIES TO RUN
-==============
-* Which characters are most popular (and with who).
-* Who apologizes (says "sorry") the most?
-* Most frequent content words.
-* Number of questions and commands.
-* Utterance counts for each character.
-* Utterances per episode for each character.
-* Utterances per episode in which a character actually appears.
+Data Issues
+===========
+* Script transcribers sometimes describe how a line is spoken or what's going on
+  in a scene as parentheticals preceding lines. I'd like to remove these and I
+  think it may be as easy as looking for a pair of parentheses at the beginning
+  of a line.
+* A lot of the character names are uses inconsistently.
 
 CHANGES MADE TO DATA
 ====================
-** Changed Pilot from episode 1 to episode 0
-    pc: 101, season 1, episode 0 (Pilot)<br>
-
-BUGS
-====
-* BAD SYMBOLS: &quot;
+* Changed Pilot from episode 1 to episode 0
+  pc: 101, season 1, episode 0 (Pilot)<br>
 
 
+Stats
+=====
+####Characters with the most lines
+SELECT speaker, count(*) count
+FROM utterance
+GROUP BY speaker
+ORDER BY count DESC
+LIMIT 20;
+
+speaker	count
+JERRY	14645
+GEORGE	9613
+ELAINE	7967
+KRAMER	6656
+NEWMAN	625
+MORTY	502
+HELEN	470
+FRANK	429
+SUSAN	382
+ESTELLE	273
+MAN	207
+PETERMAN	199
+WOMAN	199
+PUDDY	163
+LEO	145
+JACK	124
+STEINBRENNER	122
+MICKEY	118
+BANIA	102
+ROSS	102
+
+
+Projects
+========
+* Better script viewer. This was actually the motivation for writing this
+  scraping code in the first place. I wanted to make an interesting UI for
+  reading scripts to get some front-end experience. I also wanted to add
+  character profile pages that would include links to the character's lines and
+  episodes, the actor's IMDB page, etc.
+* More stats like *Characters with the most lines*.
+* Find the most common words (in general and by character), named entities 
+  mentioned frequently, etc.
+* Author identification
