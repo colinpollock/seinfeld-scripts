@@ -2,6 +2,8 @@
 
 # Download all the scripts from seinology.com
 
+SCRIPTS_DIR=$1
+
 # Skip clip show:
 #  100and101
 #  177and178
@@ -13,7 +15,7 @@
 for i in {01..81} '82and83' {84..99} {102..176} '179and180'
 do
   echo $i
-  curl http://www.seinology.com/scripts/script-$i.shtml > $i.shtml
+  curl http://www.seinology.com/scripts/script-$i.shtml > $SCRIPTS_DIR/$i.shtml
 done
 
 for file in `ls`
