@@ -21,6 +21,7 @@ Database Schema
 
 Episode
 -------
+```sql
 sqlite> .schema episode
 CREATE TABLE episode(
     id INTEGER PRIMARY KEY,
@@ -38,10 +39,12 @@ id	season_number	episode_number	title	the_date	writer	director
 1	1	0	Good News, Bad News	July 5, 1989	Larry David, Jerry Seinfeld	Art Wolff
 2	2	5	The Apartment	April 4, 1991	Peter Mehlman	Tom Cherones
 3	6	16	The Beard	February 9, 1995	Carol Leifer	Andy Ackerman
+```
 
 
 Utterance
 ---------
+```sql
 CREATE TABLE utterance(
     id INTEGER PRIMARY KEY,
     episode_id INTEGER NOT NULL,
@@ -57,10 +60,12 @@ id	episode_id	utterance_number	speaker
 1	1	1	JERRY
 2	1	2	GEORGE
 3	1	3	JERRY
+```
 
 
 Sentence
 --------
+```sql
 sqlite> .schema sentence
 CREATE TABLE sentence(
     id INTEGER PRIMARY KEY,
@@ -76,6 +81,7 @@ id	utterance_id	sentence_number	text
 1	1	1	(pointing at George's shirt) See, to me, that button is in the worst possible spot.
 2	1	2	The second button literally makes or breaks the shirt, look at it.
 3	1	3	It's too high!
+```
 
 
 Data Issues
