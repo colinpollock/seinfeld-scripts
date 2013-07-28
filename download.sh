@@ -12,7 +12,13 @@ SCRIPTS_DIR=$1
 #  82and83
 #  179and180
 
-for i in {01..81} '82and83' {84..99} {102..176} '179and180'
+for i in {1..9}
+do
+  echo $i
+  curl http://www.seinology.com/scripts/script-0$i.shtml > $SCRIPTS_DIR/0$i.shtml
+done
+
+for i in {10..81} '82and83' {84..99} {102..176} '179and180'
 do
   echo $i
   curl http://www.seinology.com/scripts/script-$i.shtml > $SCRIPTS_DIR/$i.shtml
