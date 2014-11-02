@@ -1,3 +1,5 @@
 scripts
+seinfeld.db
 
 *.swp
+*.pyc
