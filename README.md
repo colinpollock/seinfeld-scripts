@@ -5,15 +5,15 @@ I downloaded all of the Seinfeld scripts from
 [seinology.com](http://www.seinology.com/) and wrote scripts to extract the
 scripts and put them into a SQLite database.
 
-I am planning on eventually using this data in a few projects described below.
+Feel free to message me if you want the DB file.
 
-How to get the Data
-===================
-The compressed SQLite database file is 12MB so I'm not putting it in this repo (
-email me if you want it). You can also follow these steps:
-1) mkdir scripts  
-2) ./download.sh scripts
-3) ./run.sh
+Instructions
+============
+
+1) `mkdir scripts`
+2) `python download.py scripts`
+3) Fix any issues in the data (See CHANGES MADE TO DATA)
+4) `./run.sh seinfeld.db scripts`
 
 
 Database Schema
@@ -130,16 +130,3 @@ MICKEY	118
 BANIA	102
 ROSS	102
 ```
-
-
-Projects
-========
-* Better script viewer. This was actually the motivation for writing this
-  scraping code in the first place. I wanted to make an interesting UI for
-  reading scripts to get some front-end experience. I also wanted to add
-  character profile pages that would include links to the character's lines and
-  episodes, the actor's IMDB page, etc.
-* More stats like *Characters with the most lines*.
-* Find the most common words (in general and by character), named entities 
-  mentioned frequently, etc.
-* Author identification
