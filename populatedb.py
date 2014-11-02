@@ -74,14 +74,11 @@ class DatabasePopulator(object):
                 self._add_sentence(utterance_id, sent_num + 1, sentence)
 
 def main(args):
-    pop = DatabasePopulator(args.db_filename)
+    pop = DatabasePopulator(args.db_filepath)
     scripts_path = args.scripts_path
 
-    if scripts_path.startswith('http'):
-        html = urllib2.urlopen(scripts_path).read() 
-    else:
-        with open(scripts_path, 'r') as fh:
-            html = fh.read()
+    with open(scripts_path, 'r') as fh:
+        html = fh.read()
 
     pop.add_episode(html)
     pop.commit()
@@ -91,7 +88,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        'db_filename',
+        'db_filepath',
         help='Path to SQLite DB file to be created.'
     )
 
