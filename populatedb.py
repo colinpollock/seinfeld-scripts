@@ -1,5 +1,6 @@
-#!/usr/bin/env python
+"""Script for processing Seinfeld scripts and populating a SQLite3 DB. """
 
+import argparse
 import sqlite3
 import sys
 import urllib2
@@ -52,12 +53,9 @@ class DatabasePopulator(object):
             VALUES(?, ?, ?)
             """, (utterance_id, sentence_number, text))
 
-    #TODO: add words table and store text there, not in sentence.
-
 
     def add_episode(self, html):
-        data = scrape_episode(html)
-        info, utterances = data
+        info, utterances = scrape_episode(html)
 
         season_num = info['season_num']
         episode_num = info['episode_num']
@@ -75,15 +73,31 @@ class DatabasePopulator(object):
             for sent_num, sentence in enumerate(sentences):
                 self._add_sentence(utterance_id, sent_num + 1, sentence)
 
+def main(args):
+    pop = DatabasePopulator(args.db_filename)
+    scripts_path = args.scripts_path
 
-if __name__ == '__main__':
-    pop = DatabasePopulator('seinfeld.db')
-    path = sys.argv[1]
-    if path.startswith('http'):
-        html = urllib2.urlopen(path).read() 
+    if scripts_path.startswith('http'):
+        html = urllib2.urlopen(scripts_path).read() 
     else:
-        with open(path, 'r') as f:
-            html = f.read()
+        with open(scripts_path, 'r') as fh:
+            html = fh.read()
+
     pop.add_episode(html)
     pop.commit()
 
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        'db_filename',
+        help='Path to SQLite DB file to be created.'
+    )
+
+    parser.add_argument(
+        'scripts_path',
+        help='Path to directory containing scripts files.'
+    )
+
+    main(parser.parse_args(sys.argv[1:]))
