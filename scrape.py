@@ -49,23 +49,18 @@ def parse_episode_info(html):
 
 
 def parse_script(html):
+    """Returns a sequence of (speaker, utterance) pairs."""
     utterances = re.findall(r'([A-Z]+)(?: \(.*?\))?: (.*?)</?(?:br|p)>', html)
 
-    for i, (speaker, utterance) in enumerate(utterances):
+    for i, (speaker, utterance_text) in enumerate(utterances):
         # Skip the monologues at the beginning of episodes.
         if speaker.upper() == 'JERRY' and \
               i == 0 and \
-              len(utterance.split()) > 100:
+              len(utterance_text.split()) > 100:
             continue
 
-        sentences = parse_utterance(remove_tags(utterance))
-        yield (speaker, sentences)
+        yield (speaker, unescape(utterance_text))
 
-
-def parse_utterance(utterance):
-    """Return a list of sentences found in the utterance."""
-    for sentence in re.split(r'(?<!\.{3})(?<=[.;?!])\s+', unescape(utterance)):
-        yield sentence
 
 
 def scrape_episode(html):
