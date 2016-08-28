@@ -94,8 +94,8 @@ Data Issues
 
 CHANGES MADE TO DATA
 ====================
-* Changed Pilot from episode 1 to episode 0
-  pc: 101, season 1, episode 0 (Pilot)<br>
+In the file '01.shtml' look for "pc: 101, season 1, episode 1 (Pilot)" and
+change "episode 1" to "episode 0".
 
 
 Stats
