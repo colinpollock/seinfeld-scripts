@@ -1,13 +1,38 @@
 """Script for downloading Seinfeld scripts."""
 
+from __future__ import division
 import argparse
 import os
 import sys
+import time
 
 import requests
 
 
+
+def _format_num(n):
+    return '%02d' % n
+
+EPISODE_NUMBERS = (
+    map(_format_num, range(1, 82)) +
+
+    # Double episode
+    ['82and83'] +
+
+    map(_format_num, range(84, 100)) +
+
+    # Skip the clip show "100and101".
+
+    map(_format_num, range(102, 177)) +
+
+    # Skip the clip show "177and178".
+
+    # Double episode (Finale)
+    ['179and180']
+)
+
 URL = 'http://www.seinology.com/scripts/script-%s.shtml'
+
 
 def get_script_html(episode_number):
     url = URL % episode_number
@@ -16,44 +41,37 @@ def get_script_html(episode_number):
 
     return resp.text
 
-def format_num(n):
-    return '%02d' % n
-
-episode_numbers = (
-    map(format_num, range(1, 82)) + 
-
-    # Double episode
-    ['82and83'] +
-
-    map(format_num, range(84, 100)) + 
-
-    # Skip the clip show "100and101".
-
-    map(format_num, range(102, 177)) + 
-
-    # Skip the clip show "177and178".
-
-    # Double episode (Finale)
-    ['179and180']
-)
-num_episodes = len(episode_numbers)
-
-
 
 def main(args):
-    for idx, episode_number in enumerate(episode_numbers, start=1):
-        print >> sys.stderr, '[Ep. %s]\t%d of %d (%.2f%%)' %  \
-            (episode_number, idx, num_episodes, 10.0 * idx / num_episodes)
+    episode_numbers = (
+        args.episode_number if args.episode_number is not None
+        else EPISODE_NUMBERS
+    )
 
-        script_html = get_script_html(episode_number)
+    num_episodes = len(episode_numbers)
+    for idx, episode_number in enumerate(episode_numbers, start=1):
+        print >> sys.stderr, '[Ep. %s]\t\t%d of %d (%.2f%%)' %  (
+            episode_number, idx,
+            len(episode_numbers),
+            idx / num_episodes * 100
+        )
 
         out_path = os.path.join(
             args.output_directory,
             '%s.shtml' % episode_number
         )
 
+
+        if args.no_overwrite is True and os.path.exists(out_path):
+            continue
+
+        script_html = get_script_html(episode_number)
+
         with open(out_path, 'w') as fh:
             print >> fh, script_html
+
+        if idx != num_episodes:
+            time.sleep(args.sleep_seconds)
 
 
 if __name__ == '__main__':
@@ -62,6 +80,32 @@ if __name__ == '__main__':
     parser.add_argument(
         'output_directory',
         help='The directory to write script HTML files to.'
+    )
+
+    parser.add_argument(
+        '--sleep-seconds',
+        type=float,
+        default=1.0,
+        help=('The number of seconds to sleep between downloading each page. '
+              'Defaults to 1 second.')
+    )
+
+    parser.add_argument(
+        '--no-overwrite',
+        action='store_false',
+        default=True,
+        help='If True then will not overwrite existing downloaded files.'
+    )
+
+    parser.add_argument(
+        '--episode-number',
+        action='append',
+        required=False,
+        choices=EPISODE_NUMBERS,
+        help=('An episode name or number (e.g. "79" or "82and83"). If '
+              'specified then only this episode will be downloaded '
+              'rather than all of them (the default). This can be specified '
+              'multiple times.')
     )
 
     main(parser.parse_args(sys.argv[1:]))
