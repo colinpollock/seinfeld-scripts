@@ -32,12 +32,12 @@ class DatabasePopulator(object):
                                """, (season_num, episode_num))
         return val.next()[0]
 
-    def _add_utterance(self, episode_id, utterance_number, speaker):
+    def _add_utterance(self, episode_id, utterance_number, speaker, utterance):
         self.cur.execute("""
             INSERT INTO utterance 
-            (episode_id, utterance_number, speaker)
-            VALUES(?, ?, ?)""",
-            (episode_id, utterance_number, speaker))
+            (episode_id, utterance_number, speaker, text)
+            VALUES(?, ?, ?, ?)""",
+            (episode_id, utterance_number, speaker, utterance))
 
         val = self.cur.execute("""
                                SELECT id
@@ -45,13 +45,6 @@ class DatabasePopulator(object):
                                WHERE episode_id = ? AND utterance_number = ?
                                """, (episode_id, utterance_number))
         return val.next()[0]
-
-
-    def _add_sentence(self, utterance_id, sentence_number, text):
-        self.cur.execute("""
-            INSERT INTO sentence (utterance_id, sentence_number, text)
-            VALUES(?, ?, ?)
-            """, (utterance_id, sentence_number, text))
 
 
     def add_episode(self, html):
@@ -67,11 +60,13 @@ class DatabasePopulator(object):
         episode_id = self._add_episode(season_num, episode_num, title, date, 
                                        writer, director)
 
-        for utt_num, (speaker, sentences) in enumerate(utterances):
-            utterance_id = self._add_utterance(episode_id, utt_num + 1, speaker)
-
-            for sent_num, sentence in enumerate(sentences):
-                self._add_sentence(utterance_id, sent_num + 1, sentence)
+        for utt_num, (speaker, utterance) in enumerate(utterances, start=1):
+            utterance_id = self._add_utterance(
+                episode_id,
+                utt_num,
+                speaker,
+                utterance
+            )
 
 def main(args):
     pop = DatabasePopulator(args.db_filepath)

@@ -18,24 +18,7 @@ CREATE TABLE utterance(
     utterance_number INTEGER NOT NULL,
 
     speaker TEXT NOT NULL,
+    text TEXT NOT NULL,
     UNIQUE(episode_id, utterance_number),
     FOREIGN KEY(episode_id) REFERENCES episode(id)
 );
-
-
-CREATE TABLE sentence(
-    id INTEGER PRIMARY KEY,
-    utterance_id INTEGER NOT NULL,
-    sentence_number INTEGER NOT NULL,
-    text TEXT NOT NULL,
-    UNIQUE(utterance_id, sentence_number),
-    FOREIGN KEY(utterance_id) REFERENCES utterance(id)
-);
-
-
-
-CREATE VIEW speaker_sentence AS
-    SELECT u.speaker, s.text
-    FROM utterance u JOIN sentence s ON u.id == s.utterance_id
-;
-
