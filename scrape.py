@@ -25,6 +25,12 @@ def unescape(s):
     s = s.replace("&amp;", "&")
     return s
 
+
+def remove_tags(text):
+    """Returns the text with HTML tags removed."""
+    return re.sub(r'<.*?>', '', text)
+
+
 def parse_episode_info(html):
     """Return a dict with meta-info about the episode."""
     groups = re.search(r'pc: .*? season (\d+), episode (\d+)', html).groups()
@@ -41,25 +47,26 @@ def parse_episode_info(html):
             'title': title, 'date': date, 'writers': writers, 
             'director': director}
 
+
 def parse_script(html):
-    utterances = [(utt[0], utt[2]) for utt in 
-                  re.findall(r'([A-Z]+)( \(.*?\))?: (.*?)<br>', html)]
+    utterances = re.findall(r'([A-Z]+)(?: \(.*?\))?: (.*?)</?(?:br|p)>', html)
 
     for i, (speaker, utterance) in enumerate(utterances):
+        # Skip the monologues at the beginning of episodes.
         if speaker.upper() == 'JERRY' and \
               i == 0 and \
               len(utterance.split()) > 100:
-
-            print >> sys.stderr, "SKIPPING MONOLOGUE"
             continue
-        sentences = parse_utterance(utterance)
+
+        sentences = parse_utterance(remove_tags(utterance))
         yield (speaker, sentences)
+
 
 def parse_utterance(utterance):
     """Return a list of sentences found in the utterance."""
-    #TODO: ignore monologue?
     for sentence in re.split(r'(?<!\.{3})(?<=[.;?!])\s+', unescape(utterance)):
         yield sentence
+
 
 def scrape_episode(html):
     html = html.replace('&nbsp;', ' ')
@@ -70,5 +77,3 @@ def scrape_episode(html):
 
     utterances = parse_script(script_html)
     return (info, utterances)
-
-
