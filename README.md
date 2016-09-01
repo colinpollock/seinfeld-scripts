@@ -10,10 +10,10 @@ Feel free to message me if you want the DB file.
 Instructions
 ============
 
-1) `mkdir scripts`
-2) `python download.py scripts`
-3) Fix any issues in the data (See CHANGES MADE TO DATA)
-4) `./run.sh seinfeld.db scripts`
+1. `mkdir scripts`
+2. `python download.py scripts`
+3. Fix any issues in the data (See CHANGES MADE TO DATA)
+4. `./run.sh seinfeld.db scripts`
 
 
 Database Schema
@@ -51,36 +51,16 @@ CREATE TABLE utterance(
     utterance_number INTEGER NOT NULL,
 
     speaker TEXT NOT NULL,
+    text TEXT NOT NULL,
     UNIQUE(episode_id, utterance_number),
     FOREIGN KEY(episode_id) REFERENCES episode(id)
 );
 
 sqlite> select * from utterance limit 3;
-id	episode_id	utterance_number	speaker
-1	1	1	JERRY
-2	1	2	GEORGE
-3	1	3	JERRY
-```
-
-
-Sentence
---------
-```sql
-sqlite> .schema sentence
-CREATE TABLE sentence(
-    id INTEGER PRIMARY KEY,
-    utterance_id INTEGER NOT NULL,
-    sentence_number INTEGER NOT NULL,
-    text TEXT NOT NULL,
-    UNIQUE(utterance_id, sentence_number),
-    FOREIGN KEY(utterance_id) REFERENCES utterance(id)
-);
-
-sqlite> select * from sentence limit 3;
-id	utterance_id	sentence_number	text
-1	1	1	(pointing at George's shirt) See, to me, that button is in the worst possible spot.
-2	1	2	The second button literally makes or breaks the shirt, look at it.
-3	1	3	It's too high!
+id	episode_id	utterance_number	speaker	text
+1	1	1	JERRY	(pointing at George's shirt) See, to me, that button is in the worst possible spot. The second button literally makes or breaks the shirt, look at it. It's too high! It's in no-man's-land. You look like you live with your mother.
+2	1	2	GEORGE	Are you through?
+3	1	3	JERRY	You do of course try on, when you buy?
 ```
 
 
@@ -92,6 +72,7 @@ Data Issues
   of a line.
 * A lot of the character names are uses inconsistently.
 
+
 CHANGES MADE TO DATA
 ====================
 In the file '01.shtml' look for "pc: 101, season 1, episode 1 (Pilot)" and
@@ -102,7 +83,7 @@ Stats
 =====
 ####Characters with the most lines
 ```sql
-SELECT speaker, count(*) count
+SELECT speaker, count(*) as count
 FROM utterance
 GROUP BY speaker
 ORDER BY count DESC
