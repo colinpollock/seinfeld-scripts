@@ -14,16 +14,16 @@ def _format_num(n):
     return '%02d' % n
 
 EPISODE_NUMBERS = (
-    map(_format_num, range(1, 82)) +
+    list(map(_format_num, range(1, 82))) +
 
     # Double episode
     ['82and83'] +
 
-    map(_format_num, range(84, 100)) +
+    list(map(_format_num, range(84, 100))) +
 
     # Skip the clip show "100and101".
 
-    map(_format_num, range(102, 177)) +
+    list(map(_format_num, range(102, 177))) +
 
     # Skip the clip show "177and178".
 
@@ -31,7 +31,7 @@ EPISODE_NUMBERS = (
     ['179and180']
 )
 
-URL = 'http://www.seinology.com/scripts/script-%s.shtml'
+URL = 'http://web.archive.org/web/20170707014801/http://www.seinology.com/scripts/script-%s.shtml'
 
 
 def get_script_html(episode_number):
@@ -50,11 +50,11 @@ def main(args):
 
     num_episodes = len(episode_numbers)
     for idx, episode_number in enumerate(episode_numbers, start=1):
-        print >> sys.stderr, '[Ep. %s]\t\t%d of %d (%.2f%%)' %  (
+        print('[Ep. %s]\t\t%d of %d (%.2f%%)' %  (
             episode_number, idx,
             len(episode_numbers),
             idx / num_episodes * 100
-        )
+        ))
 
         out_path = os.path.join(
             args.output_directory,
@@ -68,7 +68,7 @@ def main(args):
         script_html = get_script_html(episode_number)
 
         with open(out_path, 'w') as fh:
-            print >> fh, script_html
+            fh.write(script_html)
 
         if idx != num_episodes:
             time.sleep(args.sleep_seconds)

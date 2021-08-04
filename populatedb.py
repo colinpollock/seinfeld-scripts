@@ -3,7 +3,6 @@
 import argparse
 import sqlite3
 import sys
-import urllib2
 
 from scrape import scrape_episode
 
